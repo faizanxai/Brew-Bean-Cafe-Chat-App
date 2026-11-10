@@ -3,7 +3,7 @@
 //  BrewBeanChatApp
 //
 //  Created by Faizan Nabi on 11/11/2026.
-//
+
 
 import SwiftUI
 import SwiftData
@@ -15,13 +15,11 @@ struct ContentView: View {
 
     var body: some View {
         @Bindable var coordinator = coordinator
-
+        
         NavigationStack(path: $coordinator.path) {
             List {
                 ForEach(chats) { chat in
-                    Button {
-                        coordinator.push(.chatDetail(chat.id))
-                    } label: {
+                    NavigationLink(value: chat) {
                         row(for: chat)
                     }
                     .listRowBackground(Color.white.opacity(0.85))
@@ -47,6 +45,11 @@ struct ContentView: View {
                     )
                 }
             }
+            // Handles the row taps (modern navigation)
+            .navigationDestination(for: Chat.self) { chat in
+                ChatDetailView(chat: chat)
+            }
+            // Keeps the Coordinator fully functional for Profile, etc.
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .chatDetail(let id): Text("Chat Detail for ID: \(id)").navigationTitle("Chat")
