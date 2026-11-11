@@ -4,19 +4,20 @@
 //
 //  Created by Faizan Nabi on 11/11/2026.
 
+//
+//  ContentView.swift
+//  BrewBeanChatApp
+//
 
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var context
-    @Environment(AppCoordinator.self) private var coordinator
     @Query(sort: \Chat.createdAt, order: .reverse) private var chats: [Chat]
 
     var body: some View {
-        @Bindable var coordinator = coordinator
-        
-        NavigationStack(path: $coordinator.path) {
+        NavigationStack {
             List {
                 ForEach(chats) { chat in
                     NavigationLink(value: chat) {
@@ -45,16 +46,8 @@ struct ContentView: View {
                     )
                 }
             }
-            // Handles the row taps (modern navigation)
             .navigationDestination(for: Chat.self) { chat in
                 ChatDetailView(chat: chat)
-            }
-            // Keeps the Coordinator fully functional for Profile, etc.
-            .navigationDestination(for: AppRoute.self) { route in
-                switch route {
-                case .chatDetail(let id): Text("Chat Detail for ID: \(id)").navigationTitle("Chat")
-                case .profile: Text("Profile")
-                }
             }
         }
     }
@@ -101,6 +94,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .environment(AppCoordinator())
         .modelContainer(for: [User.self, Chat.self, Message.self], inMemory: true)
 }
