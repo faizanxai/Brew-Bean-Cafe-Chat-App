@@ -17,3 +17,10 @@ Instead, the app leans directly into Apple's modern SwiftData boilerplate:
 
 *Note: As we introduce network requests and offline syncing in later tasks, we will extract business logic out of the View and into dedicated ViewModels and Services.*
 <img width="1141" height="1381" alt="image" src="https://github.com/user-attachments/assets/00cfea08-b75e-435e-b650-5e0e8f010b92" />
+## Task 2: Authentication & User Profile
+
+- **Local Auth Flow:** Users can sign up and sign in using an email and password.
+- **Security:** Passwords are hashed using `CryptoKit` (SHA256) before being stored. They are securely saved in the iOS **Keychain** using the `KeychainAccess` package.
+- **State Management:** The `AuthViewModel` handles authentication logic.
+- **Routing:** `ContentView` acts as the root router, observing `isAuthenticated` to show either `AuthView` or `ChatListView`.
+- **Persistence:** Authenticated users are saved to the SwiftData database (`User` model).

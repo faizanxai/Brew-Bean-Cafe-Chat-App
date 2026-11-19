@@ -9,9 +9,16 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @State private var authViewModel = AuthViewModel()
+    
     var body: some View {
-       
-        ChatListView()
+        Group {
+            if authViewModel.isAuthenticated {
+                ChatListView()
+            } else {
+                AuthView(viewModel: authViewModel)
+            }
+        }
     }
 }
 

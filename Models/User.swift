@@ -13,11 +13,13 @@ import SwiftData
 final class User {
     var id: UUID
     var name: String
+    var email: String
     var avatarURL: String?
 
-    init(id: UUID = UUID(), name: String, avatarURL: String? = nil) {
+    init(id: UUID = UUID(), name: String, email: String, avatarURL: String? = nil) {
         self.id = id
         self.name = name
+        self.email = email
         self.avatarURL = avatarURL
     }
 }
