@@ -2,7 +2,7 @@
 //  ChatViewModel.swift
 //  BrewBeanChatApp
 //
-//  Created by Faizan Nabi on 26/11/2026.
+//  Created by Faizan on 27/11/2026.
 //
 
 
@@ -15,12 +15,13 @@ import Observation
 final class ChatViewModel {
     var messageText = ""
     
-    private let chat: Chat
-    private let messageService: MessageServiceProtocol
-    private let networkMonitor: NetworkMonitor
-    private let currentUser = "Faizan" // In a real app, get this from Auth
+     let chat: Chat
+     let networkMonitor: NetworkMonitor
     
-    init(chat: Chat, messageService: MessageServiceProtocol, networkMonitor: NetworkMonitor) {
+    private let messageService: MessageService
+    private let currentUser = "Faizan"
+    
+    init(chat: Chat, messageService: MessageService, networkMonitor: NetworkMonitor) {
         self.chat = chat
         self.messageService = messageService
         self.networkMonitor = networkMonitor
@@ -32,25 +33,20 @@ final class ChatViewModel {
         
         messageText = ""
         
-        // 1. OPTIMISTIC UI: Create locally immediately with .sending status
         let newMessage = Message(content: text, senderName: currentUser, status: .sending)
         messageService.saveMessage(newMessage, to: chat)
         
-        // 2. Check Network
         guard networkMonitor.isConnected else {
             messageService.updateStatus(for: newMessage, to: .failed)
             return
         }
         
-        // 3. Hit the server asynchronously
         Task {
             do {
                 let serverReply = try await messageService.sendMessageToServer(text: text)
                 
-                // Mark original as sent
                 messageService.updateStatus(for: newMessage, to: .sent)
                 
-                // Save the server's reply
                 messageService.saveMessage(serverReply, to: chat)
             } catch {
                 messageService.updateStatus(for: newMessage, to: .failed)

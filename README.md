@@ -24,3 +24,11 @@ Instead, the app leans directly into Apple's modern SwiftData boilerplate:
 - **State Management:** The `AuthViewModel` handles authentication logic.
 - **Routing:** `ContentView` acts as the root router, observing `isAuthenticated` to show either `AuthView` or `ChatListView`.
 - **Persistence:** Authenticated users are saved to the SwiftData database (`User` model).
+## Task 3: Messaging Core with Offline Sync
+
+- **Messaging Engine:** Built a `ChatViewModel` using MVVM that handles the messaging logic. The UI (`ChatDetailView`) is completely decoupled from the data layer.
+- **Protocol-Oriented Architecture:** Created a `MessageServiceProtocol` to abstract the data source. The `MockMessageService` implements this protocol to handle local SwiftData saves and simulate a backend server.
+- **Optimistic UI Updates:** When a user sends a message, it is instantly saved to SwiftData with a `.sending` status, making the UI update immediately. Once the server responds, the status updates to `.sent`.
+- **Simulated Server:** The service uses `Task.sleep(for: .seconds(1))` to simulate a 1-second network delay, then reads a random response from a local `mock_replies.json` file to simulate the cafe replying.
+- **Offline Detection:** Implemented `NWPathMonitor` to continuously check internet connectivity. If the user is offline, a red banner appears, and sent messages are instantly marked as `.failed`.
+- **Persistence:** Messages are saved to the local SwiftData database and automatically re-populate the chat screen when the app is relaunched.

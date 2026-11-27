@@ -2,8 +2,9 @@
 //  AuthViewModel.swift
 //  BrewBeanChatApp
 //
-//  Created by Faizan Nabi on 19/11/2026.
+//  Created by Faizan on 27/11/2026.
 //
+
 
 import Foundation
 import SwiftUI
@@ -22,7 +23,6 @@ final class AuthViewModel {
     
     private let keychain = Keychain(service: "com.brewbean.cafe")
     
-    // SHA256 Hashing function
     private func hashPassword(_ password: String) -> String {
         let inputData = Data(password.utf8)
         let hashed = SHA256.hash(data: inputData)
@@ -36,7 +36,6 @@ final class AuthViewModel {
         }
         
         do {
-            // Check if user already exists in Keychain
             if try keychain.get(email) != nil {
                 errorMessage = "User already exists."
                 return
@@ -44,15 +43,12 @@ final class AuthViewModel {
             
             let hashedPassword = hashPassword(password)
             
-            // 1. Save to Keychain
             try keychain.set(hashedPassword, key: email)
             
-            // 2. Save to SwiftData
             let newUser = User(name: email.components(separatedBy: "@").first ?? "User", email: email)
             context.insert(newUser)
             try context.save()
             
-            // 3. Update state
             isAuthenticated = true
             errorMessage = nil
         } catch {
@@ -67,31 +63,26 @@ final class AuthViewModel {
         }
         
         do {
-            // 1. Get hashed password from Keychain
             guard let storedHash = try keychain.get(email) else {
                 errorMessage = "User not found."
                 return
             }
             
-            // 2. Hash the input password and compare
             let inputHash = hashPassword(password)
             guard storedHash == inputHash else {
                 errorMessage = "Incorrect password."
                 return
             }
             
-            // 3. Check if user exists in SwiftData (optional, but good for session)
             let descriptor = FetchDescriptor<User>(predicate: #Predicate { $0.email == email })
             let users = try context.fetch(descriptor)
             
-            // If user doesn't exist in SwiftData for some reason, recreate them
             if users.isEmpty {
                 let newUser = User(name: email.components(separatedBy: "@").first ?? "User", email: email)
                 context.insert(newUser)
                 try context.save()
             }
             
-            // 4. Update state
             isAuthenticated = true
             errorMessage = nil
         } catch {

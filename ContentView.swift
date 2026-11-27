@@ -10,11 +10,13 @@ import SwiftData
 
 struct ContentView: View {
     @State private var authViewModel = AuthViewModel()
+    @State private var networkMonitor = NetworkMonitor() // Create monitor here
     
     var body: some View {
         Group {
             if authViewModel.isAuthenticated {
-                ChatListView()
+                // Pass it to ChatListView
+                ChatListView(networkMonitor: networkMonitor)
             } else {
                 AuthView(viewModel: authViewModel)
             }

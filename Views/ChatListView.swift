@@ -13,6 +13,8 @@ struct ChatListView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \Chat.createdAt, order: .reverse) private var chats: [Chat]
 
+    let networkMonitor: NetworkMonitor
+    
     var body: some View {
         NavigationStack {
             List {
@@ -45,7 +47,7 @@ struct ChatListView: View {
                 }
             }
             .navigationDestination(for: Chat.self) { chat in
-                ChatDetailView(chat: chat)
+                ChatDetailView(chat: chat,context: context, networkMonitor:  networkMonitor)
             }
         }
     }
@@ -66,6 +68,6 @@ struct ChatListView: View {
 }
 
 #Preview {
-    ChatListView()
+    ChatListView( networkMonitor: NetworkMonitor())
         .modelContainer(for: [User.self, Chat.self, Message.self], inMemory: true)
 }
